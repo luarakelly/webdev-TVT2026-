@@ -1,0 +1,78 @@
+/* --- 1. Change default font --- */
+body {
+    font-family: 'Arial', sans-serif; /* Use any font you like */
+    background-color: #f9f9f9; /* optional light background */
+    color: #333;
+    margin: 20px;
+}
+
+/* --- 2. Style heading --- */
+h1 {
+    color: #2c3e50;
+    text-align: center;
+}
+
+/* --- 3. Style paragraph --- */
+p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* --- 4. Style link with hover effect --- */
+a {
+    color: #e74c3c; /* not default blue */
+    text-decoration: none; /* remove underline */
+    transition: color 0.3s; /* smooth transition on hover */
+}
+
+a:hover {
+    color: #c0392b; /* change color on hover */
+    text-decoration: underline; /* underline on hover */
+}
+
+/* --- 5. Style image --- */
+img {
+    border: 4px solid #3498db; /* border around image */
+    border-radius: 12px; /* rounded corners */
+    max-width: 100%; /* responsive */
+}
+
+/* --- 6. Style table --- */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+/* Add borders */
+table, th, td {
+    border: 1px solid rgba(0, 0, 0, 0.838);
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Alternate row color */
+tr:nth-child(even) {
+    background-color: #ecf0f1;
+}
+
+/* Table headers */
+th {
+    background-color: #3498db;
+    color: white;
+}
+
+/* --- 7. Style list --- */
+ul {
+    list-style-type: none; /* remove bullets */
+    padding-left: 0;
+}
+
+ul li {
+    padding: 5px 0;
+    background-color: #bdc3c7;
+    margin-bottom: 4px;
+    border-radius: 6px;
+}
