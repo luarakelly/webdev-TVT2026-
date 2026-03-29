@@ -28,3 +28,22 @@ const todoList = [
 ];
 
 // add your code here:
+
+// select the ul element
+const todoListElement = document.querySelector("ul");
+
+function addTodoItems() {
+  // loop through todoList and add items into the element
+  for (let todo of todoList) {
+    const html = `
+      <li>
+        <input type="checkbox" id="todo-${todo.id}" ${todo.completed ? "checked" : ""}>
+        <label for="todo-${todo.id}">${todo.task}</label>
+      </li>
+    `;
+
+    // insert the HTML into the ul element
+    todoListElement.insertAdjacentHTML("beforeend", html);
+  }
+
+}
