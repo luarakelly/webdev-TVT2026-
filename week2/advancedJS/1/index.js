@@ -1,4 +1,4 @@
-import { baseUrl } from "./variables.js";
+import { baseUrl } from "./variable.js";
 import { fetchData } from "./utils.js";
 import { restaurantRow, restaurantModal } from "./components.js";
 
