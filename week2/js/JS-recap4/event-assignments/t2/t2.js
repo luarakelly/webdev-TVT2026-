@@ -771,3 +771,62 @@ const restaurants = [
 ];
 
 // your code here
+
+// Sort restaurants alphabetically by name
+const sortedRestaurants = restaurants.sort((restaurantA, restaurantB) => restaurantA.name.localeCompare(restaurantB.name));
+
+// Select table and dialog
+const table = document.querySelector("table");
+const dialog = document.querySelector("dialog");
+
+function renderRestaurants() {
+  for (const restaurant of sortedRestaurants) {
+    const row = document.createElement("tr");
+    const nameColumn = document.createElement("td");
+    const addressColumn = document.createElement("td");
+
+    nameColumn.textContent = restaurant.name;
+    addressColumn.textContent = restaurant.address;
+
+    row.appendChild(nameColumn);
+    row.appendChild(addressColumn);
+
+    // Click event to highlight row and show modal
+    row.addEventListener("click", function() {
+      // Remove highlight from all rows
+      for (const row of table.querySelectorAll("tr")) {
+        row.classList.remove("highlight");
+      }
+
+      // Highlight the clicked row
+      row.classList.add("highlight");
+
+      showRestaurantDetails(restaurant);
+    });
+
+    table.appendChild(row);
+  }
+}
+
+// Show restaurant details in the dialog
+function showRestaurantDetails(restaurant) {
+  dialog.innerHTML = `
+    <h2>${restaurant.name}</h2>
+    <p><strong>Address:</strong> ${restaurant.address}</p>
+    <p><strong>Postal Code:</strong> ${restaurant.postalCode}</p>
+    <p><strong>City:</strong> ${restaurant.city}</p>
+    <p><strong>Phone:</strong> ${restaurant.phone}</p>
+    <p><strong>Company:</strong> ${restaurant.company}</p>
+    <button id="close-btn">Close</button>
+  `;
+
+  // Add close button
+  const closeBtn = dialog.querySelector("#close-btn");
+  closeBtn.addEventListener("click", function() {
+    dialog.close();
+  });
+
+  dialog.showModal();
+}
+
+renderRestaurants();
