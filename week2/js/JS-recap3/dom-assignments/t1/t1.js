@@ -45,5 +45,6 @@ function addTodoItems() {
     // insert the HTML into the ul element
     todoListElement.insertAdjacentHTML("beforeend", html);
   }
-
 }
+
+ addTodoItems();
