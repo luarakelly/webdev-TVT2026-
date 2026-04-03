@@ -3,9 +3,9 @@ import {
   getUser,
   getUserById,
   postUser,
-  putUser,
-  removeUser,
+  deleteUser,
 } from '../controllers/user-controller.js';
+import { authenticateToken } from '../middlewares/authentication.js';
 
 const router = express.Router();
 
@@ -14,7 +14,6 @@ router.route('/').get(getUser).post(postUser);
 router
   .route('/:id')
   .get(getUserById)
-  .put(putUser)
-  .delete(removeUser);
+  .delete(authenticateToken, deleteUser);
 
 export default router;
