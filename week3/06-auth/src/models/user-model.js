@@ -10,41 +10,42 @@ const findUserById = async (id) => {
     'SELECT * FROM wsk_users WHERE user_id = ?',
     [id]
   );
-  return rows[0] || null;
-};
-
-const findUserByUsername = async (username) => {
-  const [rows] = await promisePool.execute(
-    'SELECT * FROM wsk_users WHERE username = ?',
-    [username]
-  );
-  return rows[0] || null;
+  return rows.length ? rows[0] : false;
 };
 
 const addUser = async (user) => {
   const { name, username, email, role, password } = user;
-
-  const [result] = await promisePool.execute(
-    `INSERT INTO wsk_users (name, username, email, role, password)
-     VALUES (?, ?, ?, ?, ?)`,
-    [name, username, email, role, password]
-  );
-
+  const sql = `INSERT INTO wsk_users (name, username, email, role, password) VALUES (?, ?, ?, ?, ?)`;
+  const [result] = await promisePool.execute(sql, [name, username, email, role, password]);
   return { user_id: result.insertId, ...user };
 };
 
-const deleteUserById = async (id) => {
-  const [result] = await promisePool.execute(
-    'DELETE FROM wsk_users WHERE user_id = ?',
-    [id]
+const modifyUser = async (user, id) => {
+  const sql = promisePool.format(
+    `UPDATE wsk_users SET ? WHERE user_id = ?`,
+    [user, id]
   );
-  return result.affectedRows > 0;
+  const [result] = await promisePool.execute(sql);
+  return result.affectedRows ? { message: 'success' } : false;
 };
 
-export {
-  listAllUsers,
-  findUserById,
-  findUserByUsername,
-  addUser,
-  deleteUserById,
+const deleteUser = async (userId) => {
+  const connection = await promisePool.getConnection();
+  try {
+    await connection.beginTransaction();
+    await connection.execute('DELETE FROM wsk_cats WHERE owner = ?', [userId]);
+    const [result] = await connection.execute(
+      'DELETE FROM wsk_users WHERE user_id = ?',
+      [userId]
+    );
+    await connection.commit();
+    return result.affectedRows ? { message: 'success' } : false;
+  } catch (err) {
+    await connection.rollback();
+    throw err;
+  } finally {
+    connection.release();
+  }
 };
+
+export { listAllUsers, findUserById, addUser, modifyUser, deleteUser };

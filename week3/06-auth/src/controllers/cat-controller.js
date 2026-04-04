@@ -1,77 +1,81 @@
 import {
   listAllCats,
   findCatById,
+  getCatsByUser,
   addCat,
   modifyCat,
   removeCat,
 } from '../models/cat-model.js';
 
+// Get all
 const getCat = async (req, res) => {
-  const cats = await listAllCats();
-  res.json(cats);
+  try {
+    const cats = await listAllCats();
+    res.json(cats);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
 };
 
+// Get by id
 const getCatById = async (req, res) => {
-  const cat = await findCatById(req.params.id);
-  if (!cat) return res.sendStatus(404);
-  res.json(cat);
+  try {
+    const cat = await findCatById(req.params.id);
+    if (cat) res.json(cat);
+    else res.sendStatus(404);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
 };
 
+// Get by user
+const getCatByUser = async (req, res) => {
+  try {
+    const cats = await getCatsByUser(req.params.id);
+    res.json(cats);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+};
+
+// Create
 const postCat = async (req, res) => {
   try {
-    const user = res.locals.user;
-
     const newCat = await addCat({
       ...req.body,
-      owner: user.user_id, // 🔥 enforce owner from token
       filename: req.file ? req.file.filename : null,
     });
-
     res.status(201).json(newCat);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to create cat' });
+    res.status(500).json({error: err.message});
   }
 };
 
+// Update
 const putCat = async (req, res) => {
   try {
-    const user = res.locals.user;
-    const cat = await findCatById(req.params.id);
-
-    if (!cat) return res.sendStatus(404);
-
-    // 🔥 AUTHORIZATION
-    if (user.role !== 'admin' && cat.owner !== user.user_id) {
-      return res.sendStatus(403);
-    }
-
-    const updated = await modifyCat(req.body, req.params.id);
-    res.json(updated);
+    const result = await modifyCat(req.body, req.params.id);
+    res.json(result);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Update failed' });
+    res.status(500).json({error: err.message});
   }
 };
 
+// Delete
 const deleteCat = async (req, res) => {
   try {
-    const user = res.locals.user;
-    const cat = await findCatById(req.params.id);
-
-    if (!cat) return res.sendStatus(404);
-
-    // 🔥 AUTHORIZATION
-    if (user.role !== 'admin' && cat.owner !== user.user_id) {
-      return res.sendStatus(403);
-    }
-
-    await removeCat(req.params.id);
-    res.json({ message: 'Cat deleted' });
+    const result = await removeCat(req.params.id);
+    res.json(result);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Delete failed' });
+    res.status(500).json({error: err.message});
   }
 };
 
-export { getCat, getCatById, postCat, putCat, deleteCat };
+export {
+  getCat,
+  getCatById,
+  getCatByUser,
+  postCat,
+  putCat,
+  deleteCat,
+};
