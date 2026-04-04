@@ -7,39 +7,35 @@ import {
   removeCat,
 } from '../models/cat-model.js';
 
-// Get all
-const getCat = async (req, res) => {
+const getCat = async (req, res, next) => {
   try {
     const cats = await listAllCats();
     res.json(cats);
   } catch (err) {
-    res.status(500).json({error: err.message});
+    next(err);
   }
 };
 
-// Get by id
-const getCatById = async (req, res) => {
+const getCatById = async (req, res, next) => {
   try {
     const cat = await findCatById(req.params.id);
     if (cat) res.json(cat);
-    else res.sendStatus(404);
+    else next({ status: 404, message: 'Cat not found' });
   } catch (err) {
-    res.status(500).json({error: err.message});
+    next(err);
   }
 };
 
-// Get by user
-const getCatByUser = async (req, res) => {
+const getCatByUser = async (req, res, next) => {
   try {
     const cats = await getCatsByUser(req.params.id);
     res.json(cats);
   } catch (err) {
-    res.status(500).json({error: err.message});
+    next(err);
   }
 };
 
-// Create
-const postCat = async (req, res) => {
+const postCat = async (req, res, next) => {
   try {
     const newCat = await addCat({
       ...req.body,
@@ -47,51 +43,40 @@ const postCat = async (req, res) => {
     });
     res.status(201).json(newCat);
   } catch (err) {
-    res.status(500).json({error: err.message});
+    next(err);
   }
 };
 
-// Update
-const putCat = async (req, res) => {
+const putCat = async (req, res, next) => {
   try {
     const cat = await findCatById(req.params.id);
-    if (!cat) return res.sendStatus(404);
+    if (!cat) return next({ status: 404, message: 'Cat not found' });
 
-    // only owner or admin can update
     if (res.locals.user.role !== 'admin' && cat.owner !== res.locals.user.user_id) {
-      return res.sendStatus(403);
+      return next({ status: 403, message: 'Forbidden' });
     }
 
     const result = await modifyCat(req.body, req.params.id);
     res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-// Delete
-const deleteCat = async (req, res) => {
+const deleteCat = async (req, res, next) => {
   try {
     const cat = await findCatById(req.params.id);
-    if (!cat) return res.sendStatus(404);
+    if (!cat) return next({ status: 404, message: 'Cat not found' });
 
-    // only owner or admin can delete
     if (res.locals.user.role !== 'admin' && cat.owner !== res.locals.user.user_id) {
-      return res.sendStatus(403);
+      return next({ status: 403, message: 'Forbidden' });
     }
 
     const result = await removeCat(req.params.id);
     res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-export {
-  getCat,
-  getCatById,
-  getCatByUser,
-  postCat,
-  putCat,
-  deleteCat,
-};
+export { getCat, getCatById, getCatByUser, postCat, putCat, deleteCat };
