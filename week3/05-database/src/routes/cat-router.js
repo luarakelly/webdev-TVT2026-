@@ -1,4 +1,5 @@
 import express from 'express';
+import { upload, createThumbnail } from '../middlewares/upload.js';
 import {
   getCat,
   getCatById,
@@ -11,9 +12,9 @@ import {
 const router = express.Router();
 
 router.get('/', getCat);
-router.get('/:id', getCatById);
 router.get('/user/:id', getCatByUser);
-router.post('/', postCat);
+router.get('/:id', getCatById);
+router.post('/', upload.single('cat'), createThumbnail, postCat);
 router.put('/:id', putCat);
 router.delete('/:id', deleteCat);
 

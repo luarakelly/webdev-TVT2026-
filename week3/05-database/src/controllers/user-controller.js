@@ -2,10 +2,10 @@ import {
   listAllUsers,
   findUserById,
   addUser,
+  modifyUser,
   deleteUser,
 } from '../models/user-model.js';
 
-// Get all users
 const getUser = async (req, res) => {
   try {
     const users = await listAllUsers();
@@ -15,7 +15,6 @@ const getUser = async (req, res) => {
   }
 };
 
-// Get user by id
 const getUserById = async (req, res) => {
   try {
     const user = await findUserById(req.params.id);
@@ -26,7 +25,6 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Create user
 const postUser = async (req, res) => {
   try {
     const newUser = await addUser(req.body);
@@ -36,16 +34,16 @@ const postUser = async (req, res) => {
   }
 };
 
-// Update user
 const putUser = async (req, res) => {
   try {
-    res.json({ message: 'User update not implemented yet' });
+    const result = await modifyUser(req.body, req.params.id);
+    if (result) res.json(result);
+    else res.sendStatus(404);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Delete user
 const removeUser = async (req, res) => {
   try {
     const result = await deleteUser(req.params.id);
