@@ -8,6 +8,7 @@ import {
   putCat,
   deleteCat,
 } from '../controllers/cat-controller.js';
+import { authenticateToken } from '../middlewares/authentication.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.get('/', getCat);
 router.get('/user/:id', getCatByUser);
 router.get('/:id', getCatById);
 router.post('/', upload.single('cat'), createThumbnail, postCat);
-router.put('/:id', putCat);
-router.delete('/:id', deleteCat);
+router.put('/:id', authenticateToken, putCat);
+router.delete('/:id', authenticateToken, deleteCat);
 
 export default router;

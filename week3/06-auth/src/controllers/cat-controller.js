@@ -54,20 +54,36 @@ const postCat = async (req, res) => {
 // Update
 const putCat = async (req, res) => {
   try {
+    const cat = await findCatById(req.params.id);
+    if (!cat) return res.sendStatus(404);
+
+    // only owner or admin can update
+    if (res.locals.user.role !== 'admin' && cat.owner !== res.locals.user.user_id) {
+      return res.sendStatus(403);
+    }
+
     const result = await modifyCat(req.body, req.params.id);
     res.json(result);
   } catch (err) {
-    res.status(500).json({error: err.message});
+    res.status(500).json({ error: err.message });
   }
 };
 
 // Delete
 const deleteCat = async (req, res) => {
   try {
+    const cat = await findCatById(req.params.id);
+    if (!cat) return res.sendStatus(404);
+
+    // only owner or admin can delete
+    if (res.locals.user.role !== 'admin' && cat.owner !== res.locals.user.user_id) {
+      return res.sendStatus(403);
+    }
+
     const result = await removeCat(req.params.id);
     res.json(result);
   } catch (err) {
-    res.status(500).json({error: err.message});
+    res.status(500).json({ error: err.message });
   }
 };
 

@@ -1,7 +1,9 @@
 import express from 'express';
 import api from './api/index.js';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 // Parses incoming requests with JSON payloads
 app.use(express.json());
 // Parses URL-encoded form data (like HTML forms)

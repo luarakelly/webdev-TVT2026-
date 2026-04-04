@@ -4,19 +4,13 @@ import { findUserByUsername } from '../models/user-model.js';
 import 'dotenv/config';
 
 const postLogin = async (req, res) => {
-  console.log('BODY:', req.body);
-
   const user = await findUserByUsername(req.body.username);
-  console.log('USER FROM DB:', user);
-
   if (!user) return res.sendStatus(401);
 
-  const match = await bcrypt.compare(req.body.password, user.password);
-  console.log('PASSWORD MATCH:', match);
+  const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+  if (!passwordMatch) return res.sendStatus(401);
 
-  if (!match) return res.sendStatus(401);
-
-  const userSafe = {
+  const userWithNoPassword = {
     user_id: user.user_id,
     name: user.name,
     username: user.username,
@@ -24,15 +18,19 @@ const postLogin = async (req, res) => {
     role: user.role,
   };
 
-  const token = jwt.sign(userSafe, process.env.JWT_SECRET, {
+  const token = jwt.sign(userWithNoPassword, process.env.JWT_SECRET, {
     expiresIn: '24h',
   });
 
-  res.json({ user: userSafe, token });
+  res.json({ user: userWithNoPassword, token });
 };
 
-const getMe = (req, res) => {
-  res.json({ user: res.locals.user });
+const getMe = async (req, res) => {
+  if (res.locals.user) {
+    res.json({ message: 'token ok', user: res.locals.user });
+  } else {
+    res.sendStatus(401);
+  }
 };
 
 export { postLogin, getMe };

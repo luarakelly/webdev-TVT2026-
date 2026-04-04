@@ -5,6 +5,7 @@ import {
   modifyUser,
   deleteUser,
 } from '../models/user-model.js';
+import bcrypt from 'bcrypt';
 
 const getUser = async (req, res) => {
   try {
@@ -27,6 +28,7 @@ const getUserById = async (req, res) => {
 
 const postUser = async (req, res) => {
   try {
+    req.body.password = bcrypt.hashSync(req.body.password, 10);
     const newUser = await addUser(req.body);
     res.status(201).json(newUser);
   } catch (err) {
@@ -36,6 +38,13 @@ const postUser = async (req, res) => {
 
 const putUser = async (req, res) => {
   try {
+    // only own user or admin
+    if (res.locals.user.role !== 'admin' && res.locals.user.user_id !== Number(req.params.id)) {
+      return res.sendStatus(403);
+    }
+    if (req.body.password) {
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+    }
     const result = await modifyUser(req.body, req.params.id);
     if (result) res.json(result);
     else res.sendStatus(404);
@@ -46,6 +55,10 @@ const putUser = async (req, res) => {
 
 const removeUser = async (req, res) => {
   try {
+    // only own user or admin
+    if (res.locals.user.role !== 'admin' && res.locals.user.user_id !== Number(req.params.id)) {
+      return res.sendStatus(403);
+    }
     const result = await deleteUser(req.params.id);
     res.json(result);
   } catch (err) {
