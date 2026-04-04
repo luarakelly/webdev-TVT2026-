@@ -1,20 +1,29 @@
-import bcrypt from 'bcrypt';
 import {
   listAllUsers,
   findUserById,
   addUser,
-  deleteUserById,
+  modifyUser,
+  deleteUser,
 } from '../models/user-model.js';
+import bcrypt from 'bcrypt';
 
 const getUser = async (req, res) => {
-  const users = await listAllUsers();
-  res.json(users);
+  try {
+    const users = await listAllUsers();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 const getUserById = async (req, res) => {
-  const user = await findUserById(req.params.id);
-  if (!user) return res.sendStatus(404);
-  res.json(user);
+  try {
+    const user = await findUserById(req.params.id);
+    if (user) res.json(user);
+    else res.sendStatus(404);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 const postUser = async (req, res) => {
@@ -23,31 +32,38 @@ const postUser = async (req, res) => {
     const newUser = await addUser(req.body);
     res.status(201).json(newUser);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to create user' });
+    res.status(500).json({ error: err.message });
   }
 };
 
-const deleteUser = async (req, res) => {
+const putUser = async (req, res) => {
   try {
-    const loggedUser = res.locals.user;
-
-    // 🔥 AUTHORIZATION
-    if (
-      loggedUser.role !== 'admin' &&
-      loggedUser.user_id != req.params.id
-    ) {
+    // only own user or admin
+    if (res.locals.user.role !== 'admin' && res.locals.user.user_id !== Number(req.params.id)) {
       return res.sendStatus(403);
     }
-
-    const success = await deleteUserById(req.params.id);
-    if (!success) return res.sendStatus(404);
-
-    res.json({ message: 'User deleted' });
+    if (req.body.password) {
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+    }
+    const result = await modifyUser(req.body, req.params.id);
+    if (result) res.json(result);
+    else res.sendStatus(404);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Delete failed' });
+    res.status(500).json({ error: err.message });
   }
 };
 
-export { getUser, getUserById, postUser, deleteUser };
+const removeUser = async (req, res) => {
+  try {
+    // only own user or admin
+    if (res.locals.user.role !== 'admin' && res.locals.user.user_id !== Number(req.params.id)) {
+      return res.sendStatus(403);
+    }
+    const result = await deleteUser(req.params.id);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export { getUser, getUserById, postUser, putUser, removeUser };
