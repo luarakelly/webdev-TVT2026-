@@ -1,0 +1,36 @@
+:root {
+  font: 16px system-ui, sans-serif;
+  color: #333;
+  background: #fff;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1, h2 {
+  color: #111;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+img {
+  width: 60px;
+  height: auto;
+}
