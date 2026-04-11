@@ -13,5 +13,5 @@ export default defineConfig({
   // Without this, asset paths (JS, CSS, images) would break because
   // they would try to load from "/" instead of the correct folder.
 
-  base: '/~luaram/webdev_week4/03-react-routing/',
+  base: '/~luaram/webdev_week4/04-hooks/',
 });
