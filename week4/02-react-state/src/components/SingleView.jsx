@@ -1,7 +1,7 @@
 const SingleView = (props) => {
   const {item, setSelectedItem} = props;
   return (
-    <dialog open>
+    <dialog open={!!item}>
       <h3>{item.title}</h3>
 
       {/* Media content */}
